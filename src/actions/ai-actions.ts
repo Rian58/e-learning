@@ -14,8 +14,20 @@ export async function runBehaviorClustering() {
     return { success: false, error: "Hanya Dosen atau Admin yang bisa menjalakan clustering." };
   }
 
+  const whereClause: any = { role: "MAHASISWA" };
+  
+  if (user.role === "DOSEN") {
+    whereClause.enrollments = {
+      some: {
+        course: {
+          creatorId: user.id,
+        },
+      },
+    };
+  }
+
   const students = await prisma.user.findMany({
-    where: { role: "MAHASISWA" },
+    where: whereClause,
     select: { id: true },
   });
 
@@ -112,7 +124,22 @@ export async function getAllBehaviorProfiles() {
     throw new Error("Unauthorized");
   }
 
+  const whereClause: any = {};
+  
+  if (user.role === "DOSEN") {
+    whereClause.user = {
+      enrollments: {
+        some: {
+          course: {
+            creatorId: user.id,
+          },
+        },
+      },
+    };
+  }
+
   const profiles = await prisma.behaviorProfile.findMany({
+    where: whereClause,
     include: { user: { select: { name: true, email: true } } },
     orderBy: { analyzedAt: "desc" },
   });
