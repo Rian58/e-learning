@@ -1,0 +1,248 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ─── USER & AUTH ─────────────────────────────────────────
+
+enum UserRole {
+  MAHASISWA
+  DOSEN
+  SUPER_ADMIN
+}
+
+model User {
+  id        String   @id @db.Uuid
+  name      String
+  email     String   @unique
+  role      UserRole @default(MAHASISWA)
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  enrollments           Enrollment[]
+  quizAttempts          QuizAttempt[]
+  assignmentSubmissions AssignmentSubmission[]
+  materialCompletions   MaterialCompletion[]
+  createdCourses        Course[]               @relation("CourseCreator")
+  activityLogs          ActivityLog[]
+  behaviorProfile       BehaviorProfile?
+  badges                Badge[]
+
+  @@map("users")
+}
+
+// ─── DIGITAL LEARNING ────────────────────────────────────
+
+model Course {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title          String
+  description    String
+  semester       String?
+  enrollmentCode String?  @unique @map("enrollment_code")
+  creatorId      String   @map("creator_id") @db.Uuid
+  isPublished    Boolean  @default(false) @map("is_published")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  creator     User         @relation("CourseCreator", fields: [creatorId], references: [id])
+  materials   Material[]
+  quizzes     Quiz[]
+  assignments Assignment[]
+  enrollments Enrollment[]
+
+  @@map("courses")
+}
+
+model Enrollment {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  courseId   String   @map("course_id") @db.Uuid
+  enrolledAt DateTime @default(now()) @map("enrolled_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model Material {
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId   String       @map("course_id") @db.Uuid
+  title      String
+  content    String
+  type       MaterialType
+  orderIndex Int          @map("order_index")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+
+  course      Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  completions MaterialCompletion[]
+
+  @@map("materials")
+}
+
+enum MaterialType {
+  TEXT
+  VIDEO
+  DOCUMENT
+  PRESENTATION
+}
+
+model Quiz {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId         String   @map("course_id") @db.Uuid
+  title            String
+  description      String?
+  timeLimitMinutes Int?     @map("time_limit_minutes")
+  passingScore     Int      @default(60) @map("passing_score")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  course    Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quizId       String @map("quiz_id") @db.Uuid
+  question     String
+  options      Json
+  correctIndex Int    @map("correct_index")
+  points       Int    @default(10)
+  orderIndex   Int    @map("order_index")
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_questions")
+}
+
+model QuizAttempt {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  quizId      String   @map("quiz_id") @db.Uuid
+  score       Int
+  answers     Json
+  startedAt   DateTime @map("started_at")
+  completedAt DateTime @map("completed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_attempts")
+}
+
+model Assignment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId    String   @map("course_id") @db.Uuid
+  title       String
+  description String
+  dueDate     DateTime @map("due_date")
+  maxScore    Int      @default(100) @map("max_score")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  course      Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  submissions AssignmentSubmission[]
+
+  @@map("assignments")
+}
+
+model AssignmentSubmission {
+  id           String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String           @map("user_id") @db.Uuid
+  assignmentId String           @map("assignment_id") @db.Uuid
+  content      String
+  score        Int?
+  status       SubmissionStatus @default(SUBMITTED)
+  submittedAt  DateTime         @default(now()) @map("submitted_at")
+  gradedAt     DateTime?        @map("graded_at")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, assignmentId])
+  @@map("assignment_submissions")
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADED
+  RETURNED
+}
+
+model MaterialCompletion {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  materialId  String   @map("material_id") @db.Uuid
+  completedAt DateTime @default(now()) @map("completed_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, materialId])
+  @@map("material_completions")
+}
+
+// ─── AI BEHAVIOR & GAMIFICATION ──────────────────────────
+
+enum ActivityType {
+  LOGIN
+  MATERIAL_READ
+  QUIZ_SUBMIT
+  ASSIGNMENT_SUBMIT
+}
+
+enum BehaviorCluster {
+  AKTIF
+  PASIF
+  PROCRASTINATOR
+}
+
+model ActivityLog {
+  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String       @map("user_id") @db.Uuid
+  type      ActivityType
+  metadata  Json?
+  duration  Int?
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+model BehaviorProfile {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String          @unique @map("user_id") @db.Uuid
+  cluster         BehaviorCluster
+  loginFrequency  Float           @map("login_frequency")
+  studyTime       Float           @map("study_time")
+  completionRate  Float           @map("completion_rate")
+  strategy        Json
+  analyzedAt      DateTime        @default(now()) @map("analyzed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("behavior_profiles")
+}
+
+model Badge {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  name        String
+  description String
+  icon        String
+  earnedAt    DateTime @default(now()) @map("earned_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("badges")
+}
