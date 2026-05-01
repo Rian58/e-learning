@@ -21,8 +21,8 @@ export default function LandingNavbar() {
 
   const NavLinks = ({ mobile }: { mobile?: boolean }) => (
     <>
-      <Link href="/#fitur" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>Fitur</Link>
-      <Link href="/#ai-clustering" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>AI Clustering</Link>
+      <Link href="/fitur" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>Fitur</Link>
+      <Link href="/ai-clustering" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>AI Clustering</Link>
       <Link href="/about" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>Tentang Kami</Link>
       <Link href="/help" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>Pusat Bantuan</Link>
     </>

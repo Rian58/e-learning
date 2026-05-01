@@ -34,7 +34,7 @@ export default function LandingFooter() {
             <h3 className="font-bold text-lg mb-6">Navigasi</h3>
             <ul className="space-y-4 text-sm font-medium text-muted-foreground">
               <li><Link href="/" className="hover:text-primary transition-colors">Beranda</Link></li>
-              <li><Link href="/#fitur" className="hover:text-primary transition-colors">Fitur AI</Link></li>
+              <li><Link href="/fitur" className="hover:text-primary transition-colors">Fitur AI</Link></li>
             </ul>
           </div>
 
