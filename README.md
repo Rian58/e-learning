@@ -1,7 +1,7 @@
 <div align="center">
   <br />
-  <!-- Ganti URL logo dengan logo proyekmu -->
-  <img src="https://via.placeholder.com/150?text=Stack+Sinau" alt="Stack Sinau Logo" width="150" />
+  <!-- Pastikan kamu menyimpan gambar logomu dengan nama 'logo.png' di folder 'public' -->
+  <img src="./public/logo.png" alt="Stack Sinau Logo" width="150" style="border-radius: 20px;" />
   <h1>📚 Stack Sinau E-Learning</h1>
   <p>
     A Modern, Gamified E-Learning Platform built with Next.js 16, Supabase, and AI Integration.
