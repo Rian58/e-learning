@@ -97,7 +97,7 @@ export function Chatbot({ isAuthenticated = false, userName }: ChatbotProps) {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-[4.5rem] sm:bottom-6 right-4 sm:right-6 z-[60] h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-primary text-primary-foreground border-[3px] border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] flex items-center justify-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 group"
+          className="fixed bottom-[4.5rem] sm:bottom-6 right-4 sm:right-6 z-40 h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-primary text-primary-foreground border-[3px] border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] flex items-center justify-center hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] transition-all duration-300 group"
           aria-label="Buka Chatbot"
         >
           <MessageSquare className="h-6 w-6 sm:h-7 sm:w-7 group-hover:scale-110 transition-transform" />

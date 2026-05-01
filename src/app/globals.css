@@ -248,6 +248,12 @@
     box-shadow: 0px 0px var(--neo-shadow-blur) var(--neo-shadow-color);
   }
 
+  .neo-button-none {
+    border-color: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
   .neo-input {
     border-width: var(--neo-border-width);
     border-color: var(--border);

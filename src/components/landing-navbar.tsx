@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 
 export default function LandingNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,12 +19,12 @@ export default function LandingNavbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const NavLinks = () => (
+  const NavLinks = ({ mobile }: { mobile?: boolean }) => (
     <>
-      <Link href="/#fitur" className="font-bold text-foreground hover:text-primary transition-colors">Fitur</Link>
-      <Link href="/#ai-clustering" className="font-bold text-foreground hover:text-primary transition-colors">AI Clustering</Link>
-      <Link href="/about" className="font-bold text-foreground hover:text-primary transition-colors">Tentang Kami</Link>
-      <Link href="/help" className="font-bold text-foreground hover:text-primary transition-colors">Pusat Bantuan</Link>
+      <Link href="/#fitur" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>Fitur</Link>
+      <Link href="/#ai-clustering" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>AI Clustering</Link>
+      <Link href="/about" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>Tentang Kami</Link>
+      <Link href="/help" onClick={() => mobile && setIsOpen(false)} className={`font-bold text-foreground hover:text-primary transition-colors ${mobile ? 'block py-3 px-4 rounded-lg hover:bg-muted' : ''}`}>Pusat Bantuan</Link>
     </>
   );
 
@@ -61,25 +62,25 @@ export default function LandingNavbar() {
           </div>
 
           {/* Mobile Menu Hamburger */}
-          <Sheet>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger render={<Button variant="outline" size="icon" className="lg:hidden neo-button h-10 w-10" />}>
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle Menu</span>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] border-l-[3px] border-border flex flex-col">
+            <SheetContent side="right" className="w-full sm:max-w-sm border-l-[3px] border-border flex flex-col p-6">
               <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
-              <div className="flex flex-col gap-6 mt-8">
-                <nav className="flex flex-col gap-4 text-lg">
-                  <NavLinks />
+              <div className="flex flex-col gap-6 mt-10">
+                <nav className="flex flex-col gap-2 text-lg">
+                  <NavLinks mobile />
                 </nav>
                 <div className="h-[2px] w-full bg-border"></div>
                 <div className="flex flex-col gap-3">
-                  <Link href="/login" className="w-full">
+                  <Link href="/login" className="w-full" onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full neo-button font-bold text-base h-12">
                       Masuk
                     </Button>
                   </Link>
-                  <Link href="/register" className="w-full">
+                  <Link href="/register" className="w-full" onClick={() => setIsOpen(false)}>
                     <Button className="w-full neo-button font-bold text-base h-12">Daftar</Button>
                   </Link>
                 </div>
