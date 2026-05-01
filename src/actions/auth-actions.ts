@@ -74,10 +74,13 @@ export async function loginWithGoogle() {
   const host = headersList.get('host') || 'localhost:3000';
   const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
   
+  // Gunakan SITE_URL dari env jika ada, jika tidak fallback ke host header
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://${host}`;
+  
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${protocol}://${host}/auth/callback`,
+      redirectTo: `${baseUrl}/auth/callback`,
       queryParams: {
         access_type: 'offline',
         prompt: 'consent',
