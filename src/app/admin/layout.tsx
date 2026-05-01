@@ -15,7 +15,7 @@ export default async function AdminLayout({
     redirect("/login");
   }
 
-  if (user.role !== "SUPER_ADMIN") {
+  if (user.role !== "SUPER_ADMIN" && user.role !== "DOSEN") {
     redirect("/dashboard");
   }
 
